@@ -20,7 +20,7 @@ def plot_2d_function(f,range = [[-10,10],[-10,10]], bins = [50,50], alpha = 0.7)
         with torch.no_grad():
             plt.pcolormesh(tt_x,tt_y,f(mesh).numpy().reshape(bins[0],bins[1]).T, cmap = matplotlib.cm.get_cmap('viridis'), alpha = alpha, lw = 0)
 
-def plot_likelihood_function(log_likelihood, range = [[-10,10],[-10,10]], bins = [50,50,], levels = 2 , alpha = 0.7):
+def plot_likelihood_function(log_likelihood, range = [[-10,10],[-10,10]], bins = [50,50], levels = 2 , alpha = 0.7):
     with torch.no_grad():
         tt_x = torch.linspace(range[0][0], range[0][1], bins[0])
         tt_y = torch.linspace(range[1][0],range[1][1], bins[1])
