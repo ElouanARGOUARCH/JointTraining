@@ -2,11 +2,11 @@ import torch
 import matplotlib
 import matplotlib.pyplot as plt
 
-def plot_1d_unormalized_function(f,range = [-10,10], bins=200):
-    tt =torch.linspace(range[0],range[1],200)
+def plot_1d_unormalized_function(f,range = [-10,10], bins=100):
+    tt =torch.linspace(range[0],range[1],bins)
     with torch.no_grad():
         values = f(tt)
-        plt.plot(tt, values*bins/(torch.sum(values)*(range[1] - range[0])))
+    plot_1d_unormalized_values(values,tt)
 
 def plot_1d_unormalized_values(values,tt):
     x_min, x_max, bins = tt[0], tt[-1], tt.shape[0]

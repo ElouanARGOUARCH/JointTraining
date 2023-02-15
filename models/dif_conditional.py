@@ -138,7 +138,7 @@ class ConditionalDIF(nn.Module):
         z = self.T.forward(batch_x, batch_theta)
         return -torch.sum(batch_w*torch.logsumexp(self.reference.log_prob(z) + torch.diagonal(self.w.log_prob(torch.cat([z, batch_theta_unsqueezed], dim = -1)), 0, -2, -1) + self.T.log_det_J(batch_x, batch_theta), dim=-1))
 
-    def train(self, epochs, batch_size = None,lr = 5e-3):
+    def train(self, epochs, batch_size = None,lr = 5e-3, verbose = False):
         w = torch.distributions.Dirichlet(torch.ones(self.D_x.shape[0])).sample()
         self.para_list = list(self.parameters())
         self.optimizer = torch.optim.Adam(self.para_list, lr=lr)
@@ -149,7 +149,10 @@ class ConditionalDIF(nn.Module):
 
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.to(device)
-        pbar = tqdm(range(epochs))
+        if verbose:
+            pbar = tqdm(range(epochs))
+        else:
+            pbar = range(epochs)
         for _ in pbar:
             dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
             for i, batch in enumerate(dataloader):
@@ -159,7 +162,8 @@ class ConditionalDIF(nn.Module):
                 batch_loss.backward()
                 self.optimizer.step()
             with torch.no_grad():
-                iteration_loss = torch.tensor([self.loss(batch[0].to(device), batch[1].to(device), batch[2].to(device)) for i, batch in enumerate(dataloader)]).mean().item()
+                iteration_loss = torch.tensor([self.loss(batch[0].to(device), batch[1].to(device), batch[2].to(device)) for i, batch in enumerate(dataloader)]).sum().item()
             self.loss_values.append(iteration_loss)
-            pbar.set_postfix_str('loss = ' + str(round(iteration_loss,6)) + ' ; device: ' + str(device))
+            if verbose:
+                pbar.set_postfix_str('loss = ' + str(round(iteration_loss,6)) + ' ; device: ' + str(device))
         self.to(torch.device('cpu'))

@@ -22,11 +22,15 @@ class IMH(nn.Module):
         x = (mask) * x_prime + (1 - (mask)) * x
         return x,mask
 
-    def sample(self, number_steps):
+    def sample(self, number_steps, verbose = False):
         x = self.proposal_distribution.sample([self.number_chains])
-        pbar = tqdm(range(number_steps))
+        if verbose:
+            pbar = tqdm(range(number_steps))
+        else:
+            pbar = range(number_steps)
         for t in pbar:
             proposed_x = self.proposal_distribution.sample([self.number_chains])
             x,mask = self.independant_metropolis_step(x,proposed_x)
-            pbar.set_postfix_str('acceptance = ' + str(torch.mean(mask * 1.)))
+            if verbose:
+                pbar.set_postfix_str('acceptance = ' + str(torch.mean(mask * 1.)))
         return x
