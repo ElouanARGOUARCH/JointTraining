@@ -99,6 +99,7 @@ class ConditionalDIF(nn.Module):
         self.K = K
 
         self.reference = MultivariateNormalReference(self.p)
+        self.reference.estimate_moments(D_x)
 
         self.w = SoftmaxWeight(self.K, self.p+self.d, hidden_dimensions)
 

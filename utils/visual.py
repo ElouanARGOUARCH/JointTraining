@@ -1,6 +1,7 @@
 import torch
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy
 
 def plot_1d_unormalized_function(f,range = [-10,10], bins=100):
     tt =torch.linspace(range[0],range[1],bins)
@@ -31,3 +32,13 @@ def plot_likelihood_function(log_likelihood, range = [[-10,10],[-10,10]], bins =
 
 def plot_2d_points(samples):
     plt.scatter(samples[:,0], samples[:,1])
+
+def plot_image_2d_points(samples, bins=(200, 200), range=None, figsize=(12, 8)):
+    assert samples.shape[-1] == 2, 'Requires 2-dimensional points'
+    fig = plt.figure(figsize=figsize)
+    hist_accepted_samples, x_edges, y_edges = numpy.histogram2d(samples[:, 1].numpy(), samples[:, 0].numpy(), bins,
+                                                                range)
+    plt.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
+    plt.imshow(torch.flip(torch.flip(torch.tensor(hist_accepted_samples).T, [0, 1]), [0, 1]),
+               extent=[0, bins[1], 0, bins[0]])
+    plt.show()
